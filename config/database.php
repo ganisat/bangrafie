@@ -58,9 +58,25 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? array_filter([
-                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-            ]) : [],
+            'options' => extension_loaded('pdo_mysql') ? array_filter((function () {
+    $sslCa = env('MYSQL_ATTR_SSL_CA');
+
+    // kalau env kosong, tidak perlu set apa-apa
+    if (!$sslCa) return [];
+
+    // PHP 8.5+: gunakan Pdo\Mysql::ATTR_SSL_CA
+    if (class_exists(\Pdo\Mysql::class) && defined(\Pdo\Mysql::class . '::ATTR_SSL_CA')) {
+        return [\Pdo\Mysql::ATTR_SSL_CA => $sslCa];
+    }
+
+    // fallback untuk PHP lama
+    if (defined('PDO::MYSQL_ATTR_SSL_CA')) {
+        return [PDO::MYSQL_ATTR_SSL_CA => $sslCa];
+    }
+
+    return [];
+})()) : [],
+
         ],
 
         'pgsql' => [
