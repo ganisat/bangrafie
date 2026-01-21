@@ -1,22 +1,8 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Create The Application
-|--------------------------------------------------------------------------
-*/
-
 $app = new Illuminate\Foundation\Application(
     $_ENV['APP_BASE_PATH'] ?? dirname(__DIR__)
 );
-
-/*
-|--------------------------------------------------------------------------
-| Configure Storage Path (Vercel / Serverless)
-|--------------------------------------------------------------------------
-| Vercel hanya mengizinkan write di /tmp. Kalau APP_STORAGE_PATH diset,
-| kita arahkan storage Laravel ke sana.
-*/
 
 $storagePath =
     $_ENV['APP_STORAGE_PATH']
@@ -27,12 +13,6 @@ $storagePath =
 if (is_string($storagePath) && $storagePath !== '') {
     $app->useStoragePath($storagePath);
 }
-
-/*
-|--------------------------------------------------------------------------
-| Bind Important Interfaces
-|--------------------------------------------------------------------------
-*/
 
 $app->singleton(
     Illuminate\Contracts\Http\Kernel::class,
@@ -48,11 +28,5 @@ $app->singleton(
     Illuminate\Contracts\Debug\ExceptionHandler::class,
     App\Exceptions\Handler::class
 );
-
-/*
-|--------------------------------------------------------------------------
-| Return The Application
-|--------------------------------------------------------------------------
-*/
 
 return $app;
