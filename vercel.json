@@ -4,8 +4,11 @@
   },
   "outputDirectory": "public",
   "routes": [
+    { "src": "^/$", "dest": "/api/index.php" },
+    { "src": "^/index\\.php$", "dest": "/api/index.php" },
+
     { "handle": "filesystem" },
-    { "src": "/build/(.*)", "dest": "/build/$1" },
+
     { "src": "/(.*)", "dest": "/api/index.php" }
   ]
 }
