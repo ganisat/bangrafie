@@ -1,23 +1,23 @@
 <?php
 
-use Illuminate\Foundation\Application;
-use Illuminate\Foundation\Configuration\Exceptions;
-use Illuminate\Foundation\Configuration\Middleware;
+/*
+|--------------------------------------------------------------------------
+| Create The Application
+|--------------------------------------------------------------------------
+*/
 
-$basePath = $_ENV['APP_BASE_PATH'] ?? dirname(__DIR__);
+$app = new Illuminate\Foundation\Application(
+    $_ENV['APP_BASE_PATH'] ?? dirname(__DIR__)
+);
 
-$app = Application::configure(basePath: $basePath)
-    ->withRouting(
-        web: __DIR__.'/../routes/web.php',
-        commands: __DIR__.'/../routes/console.php',
-        health: '/up',
-    )
+/*
+|--------------------------------------------------------------------------
+| Configure Storage Path (Vercel / Serverless)
+|--------------------------------------------------------------------------
+| Vercel hanya mengizinkan write di /tmp. Kalau APP_STORAGE_PATH diset,
+| kita arahkan storage Laravel ke sana.
+*/
 
-    ->create();
-
-/**
- * Vercel / Serverless: arahkan storage ke /tmp jika ada APP_STORAGE_PATH
- */
 $storagePath =
     $_ENV['APP_STORAGE_PATH']
     ?? $_SERVER['APP_STORAGE_PATH']
@@ -27,5 +27,32 @@ $storagePath =
 if (is_string($storagePath) && $storagePath !== '') {
     $app->useStoragePath($storagePath);
 }
+
+/*
+|--------------------------------------------------------------------------
+| Bind Important Interfaces
+|--------------------------------------------------------------------------
+*/
+
+$app->singleton(
+    Illuminate\Contracts\Http\Kernel::class,
+    App\Http\Kernel::class
+);
+
+$app->singleton(
+    Illuminate\Contracts\Console\Kernel::class,
+    App\Console\Kernel::class
+);
+
+$app->singleton(
+    Illuminate\Contracts\Debug\ExceptionHandler::class,
+    App\Exceptions\Handler::class
+);
+
+/*
+|--------------------------------------------------------------------------
+| Return The Application
+|--------------------------------------------------------------------------
+*/
 
 return $app;
